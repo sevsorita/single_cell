@@ -1,0 +1,16 @@
+ESR1_cancer_r2=0.67.hdf5: 
+MODEL:
+    model = km.Sequential(name="Dense_model")
+    model.add(layers.Dense(32, input_dim=3234,activation="relu", kernel_initializer="glorot_normal"))
+    model.add(layers.Dropout(rate=0.2))
+    model.add(layers.Dense(16, activation="relu", kernel_initializer=init_mode))
+    model.add(layers.Dropout(rate=0.2))
+    model.add(layers.Dense(1, activation='linear', name="Output", kernel_initializer="glorot_normal"))
+    model.compile(loss="mse", optimizer="adam")
+
+DATA: 
+    df_c = pd.read_pickle("/data/severs/rna_scaled_cancer.pkl")
+    df = transpose_set_ind(df_c)
+    df_reduced = correlation_reduction(df, "ESR1", limit=0.05)
+    X = df_reduced.drop(["ESR1"], axis=1)
+    y = df_reduced["ESR1"]
