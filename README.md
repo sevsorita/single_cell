@@ -2,6 +2,7 @@
 
 This project uses XGBoost to predict the expression of genes of interest from single cell data from the tumors of breast cancer patients. The models are analyzed using shapley values to measure the importance of each gene in predicting the expression of the target gene. 
 
+Most code will only run on the `med-biostat`servers due to the data being stored there.
 
 ## Overview of files:
 ### Functions and clases
