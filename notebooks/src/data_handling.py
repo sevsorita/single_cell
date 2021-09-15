@@ -169,10 +169,6 @@ class VariableSelector:
             
             return X, Y, alpha
 
-def filter(Y):
-    return Y > 0.5
-
-lambda y : y > 0.5
 
 
 def compute_p_value(df, target, diff_lim=0.5, fdr=True, verbose=1, positive_exp=False):
