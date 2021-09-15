@@ -6,7 +6,7 @@ Most code will only run on the `med-biostat`servers due to the data being stored
 
 ## Overview of files:
 ### Functions and clases
-- `src/` - Folder containing source code for the models including data selection, model building, and cross validation
+- `Notebooks/src/` - Folder containing source code for the models including data selection, model building, and cross validation
     - `data_handling.py` - contains VariableSelector class that performs data selection and variable selection for a range of different parameters
     - `model_builder.py` - contains CellLevelModel class used for building models for a cell type and for multiple target genes. Also performs shapley analysis.
     - `model_selection.py` - XGBGridSearch class used for tuning the models. 
