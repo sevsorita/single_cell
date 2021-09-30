@@ -294,88 +294,6 @@ class CellLevelModel:
                 else:
                         return results
 
-        """
-        def build_datasets(self, n_input_var=1000, output_type="continuous", differentially_expressed=False):
-                """"""
-                Build datasets for each gene using the input variables that have the 
-                highest correlation with the output gene while having less than 20% NaNs 
-                and FDR p-value < 0.05
-                
-                Paramters:
-                ----------
-                n_input_var : int
-                        the number of input variables to include in the dataset
-                output_type : str
-                        "continuous", "binary", "3_classes"
-                differentially_expressed : float
-                        set the limit for what is a differentially expressed gene
-                """"""
-        
-                self.datasets = {}
-                for i, gene in enumerate(self.genes):
-                        print(f"Building {gene} dataset...", end="")
-                        # Select input variables
-                        input_var_path = "/data/severs/input_variables/" + self.cell_type +"_"+gene+"_input_" + str(n_input_var) + ".pkl"
-                        
-                        # Check if input variables are selected, if they are they are loaded
-                        if os.path.isfile(input_var_path):
-                                with open(input_var_path, 'rb') as handle:
-                                        selected_variables = pickle.load(handle)
-                        # If not, correlations are computed and the inputs are selected
-                        else:
-                                print("Computing correlations and selecting input variables")
-                                selected_variables = dh.complete_variable_selector(self.df, gene, save_input_vars=input_var_path, selected_variables=n_input_var)
-
-                        if gene in selected_variables:
-                                selected_variables.remove(gene)
-                        
-                        X = self.df[selected_variables]
-                        Y = self.df[gene]
-                        self.X = X
-                        self.Y = Y
-                        if output_type.lower() == "binary" or output_type.lower() == "3_classes":
-                                if not differentially_expressed:
-                                        lim = 0.5
-                                else:
-                                        lim = differentially_expressed
-
-                                print(f"Making {output_type} classification set... ", end="")
-                                Y = pd.cut(Y, bins=[-99,-abs(lim),abs(lim),99],labels=["0","1","2"])
-                                if output_type.lower() == "binary":
-                                        Y = Y[Y!="1"]             #remove non-differentially expressed
-                                        Y = Y.cat.set_categories([0,-1,1], rename=True)
-                                        Y = pd.to_numeric(Y)
-                                        self.classifier = "binary"
-                                        X = X.loc[Y.index]
-
-                                else:
-                                        Y = pd.to_numeric(Y)
-                                        self.classifier = "categorical"
-
-                        if output_type == "continuous" and differentially_expressed:
-                                Y = Y[Y[gene].abs() >= differentially_expressed]
-                                X = X[Y[gene].abs() >= differentially_expressed]
-                        
-                        X_train, X_test, X_val, y_train, y_test, y_val = modules.train_test_val_split(X, Y)
-                        
-                        # All datasets are stored in dictionary datasets.
-                        self.datasets[gene] = {"X_train" : X_train,
-                                                "X_test" : X_test,
-                                                "X_val" : X_val,
-                                                "y_train" : y_train,
-                                                "y_test" : y_test,
-                                                "y_val" : y_val}
-                        self.data_built = True
-                        print(" Completed")
-        
-                        # TODO: make masks for train, test, val instead of splitting data
-                        
-                        inds = np.arange(Y.shape[0])
-                        np.random.shuffle(inds)
-                        train_inds = inds[:int(Y.shape[0]*0.8)]
-                        test_inds = inds[int((Y.shape[0]*0.8)):]
-                        """
-
 
         def build_datasets(self, diff_lim=0.5, nan_limit=0.2, select_n=1000, seed=10, verbose=1, positive_exp=False):
                 self.datasets = {}
@@ -449,8 +367,6 @@ class CellLevelModel:
                                 Y_train = pd.concat([self.datasets[gene]["y_val"],
                                                 self.datasets[gene]["y_train"]])
                                 y_pred_train = model.predict(X_train)
-                                print(y_pred_train.shape)
-                                print(Y_train.shape)
                         else:
                                 y_pred_train = model.predict(data["X_train"])
                                 Y_train = data["y_train"]
