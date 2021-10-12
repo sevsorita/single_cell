@@ -12,7 +12,7 @@ The models for the differentially expressed subset of the data (ESR1_expression 
 
 ## Training models on the new dataset
 Completed grid search on baseline. Used differentially expressed cells i.e. |ESR1 exp|>0.5. 
-Data split using and tuned on `X_train`: 
+Data split using and tuned on `X_train` with 1000 input genes: 
 
 `X_train, X_test, X_val, y_train, y_test, y_val = modules.train_test_val_split(X, y, random_state=10)`
 
@@ -21,3 +21,12 @@ BEST_PARAMATERS:
 - min_child_weight  :  1
 - subsample  :  0.8
 - eta  :  0.02
+
+The tuning took 1 hour 49  minutes.
+
+This is currently rerun with a finer grid and lower learning rates.
+Using: 
+`X_train, X_test, X_val, y_train, y_test, y_val = modules.train_test_val_split(X, y, random_state=10)`
+
+`X_train = pd.concat([X_train, X_val])`
+`y_train = pd.concat([y_train, y_val])`
