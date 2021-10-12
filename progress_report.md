@@ -11,4 +11,13 @@ The models for the differentially expressed subset of the data (ESR1_expression 
 
 
 ## Training models on the new dataset
-Currently running randomized search for tuning the model.
+Completed grid search on baseline. Used differentially expressed cells i.e. |ESR1 exp|>0.5. 
+Data split using and tuned on `X_train`: 
+
+`X_train, X_test, X_val, y_train, y_test, y_val = modules.train_test_val_split(X, y, random_state=10)`
+
+BEST_PARAMATERS:
+- max_depth  :  3
+- min_child_weight  :  1
+- subsample  :  0.8
+- eta  :  0.02
