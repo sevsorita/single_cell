@@ -30,3 +30,8 @@ Using:
 
 `X_train = pd.concat([X_train, X_val])`
 `y_train = pd.concat([y_train, y_val])`
+
+
+## Data distribution
+
+![ESR1 distribution](plots/violin_NeoLet.png)
