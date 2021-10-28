@@ -44,7 +44,7 @@ In the first dataset patient 54 has the most cells and the most cells that are d
 
 To investigate if there is a significant difference between patients we plot the predictions of a model and color them by patient. Patient 53 and 54 represent the majority of the data because they have the most differentially expressed cells.
 
-![Prediction on validation](plots/colored_pred_test.png)
+<img src="plots/colored_pred_test.png" alt="drawing" width="500"/>
 
 It is hard to see any significant effect of the patient number. However, they seem to be grouped, but this is because the test set here has a random sample where some patients overrepresent in the negatively expressed.
 
@@ -52,4 +52,4 @@ It is hard to see any significant effect of the patient number. However, they se
 ### Leaving one patient out
 I have done this on the first dataset with poor results. Below is the training progress with the test set being patient 53 and only considering differentially expressed cells. The minimum is at MSE=1.56 and we have get MSE around 1.0 when we mix the cells together. We also see here how the model overfits to the patients in the training set. 
 
-![Training and test progress for p53](plots/train_prog_pn53.png)
+<img src="plots/train_prog_pn53.png" alt="drawing" width="500"/>
