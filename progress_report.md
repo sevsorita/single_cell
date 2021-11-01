@@ -33,7 +33,7 @@ Using:
 
 
 ## Data distribution
-Data is more evenly distributed between patients in the NeoLet dataset than the first dataset. 
+In the NeoLet dataset we see a similar imbalance between patients where patient 72 represents the biggest share of the cancer cells.
 Distribution of ESR1 across patients. 
 ![ESR1 distribution new dataset](plots/violin_NeoLet.png)
 
@@ -50,6 +50,8 @@ It is hard to see any significant effect of the patient number. However, they se
 
 
 ### Leaving one patient out
-I have done this on the first dataset with poor results. Below is the training progress with the test set being patient 53 and only considering differentially expressed cells. The minimum is at MSE=1.56 and we have get MSE around 1.0 when we mix the cells together. We also see here how the model overfits to the patients in the training set. 
+I have done this on the first dataset with poor results. Below is the training progress with the test set being patient 53 and only considering differentially expressed cells. The minimum is at RMSE=1.56 and we have get RMSE around 1.0 when we mix the cells together. We also see here how the model overfits to the patients in the training set. This trend is similar for all the patients with most not going below RMSE = 3.0
 
 <img src="plots/train_prog_pn53.png" alt="drawing" width="500"/>
+
+With these results we can conclude that we can not generalize beyond the patients in the training set. 
