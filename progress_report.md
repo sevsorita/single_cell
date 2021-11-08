@@ -55,3 +55,7 @@ I have done this on the first dataset with poor results. Below is the training p
 <img src="plots/train_prog_pn53.png" alt="drawing" width="500"/>
 
 With these results we can conclude that we can not generalize beyond the patients in the training set. 
+
+This suggests that there is more variance between patients than within patients. For the NeoLetExe dataset I am not able to distinguish between the patients in the UMAP clustering, which could indicate that the cells are more similar across patients than within patiens, but these results suggest otherwise. It might also be due to the fact that the UMAP is clustered to distinguish between cell types and not patients. 
+
+With the model used here it is in some way analogous to having 13 data points and predicting on a 14th, and it is unreasonable that 13 datapoints will represent an entire population. Especially when the actual data used is so unbalanced between the 13 datapoints. The model is in some sense extrapolating from a small handful of patients to a new one, which is probably a bad idea. 
