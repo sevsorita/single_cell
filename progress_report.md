@@ -61,3 +61,7 @@ With these results we can likely conclude that we can not generalize beyond the 
 This suggests that there is more variance between patients than within patients or at least that the in-patient-variation is not similar across patients. For the NeoLetExe dataset I am not able to distinguish between the patients in the UMAP clustering, which could indicate that the cells are more similar across patients than within patiens, but these results suggest otherwise. The UMAP result might also be due to the fact that the UMAP is clustered to distinguish between cell types and not between patients. 
 
 With the model used here it is in some way analogous to having 13 data points and predicting on a 14th, and it is unreasonable that 13 datapoints will represent an entire population. Especially when the actual data used is so unbalanced between the 13 datapoints where some individuals are almost not represented. The model is extrapolating from a small handful of patients to a new one. 
+
+
+# Dummy encoding of patient numbers
+I have done this and the patient variables have shapley values of 0. In a recent lecture with Riccard de Bin he presented a method he used to force the model to use some variables more often. He didn't explain it fully, but I plan to talk to him to see if he has any good suggestions. He had worked with genetics data to predict survival. 
