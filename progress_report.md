@@ -50,12 +50,14 @@ It is hard to see any significant effect of the patient number. However, they se
 
 
 ### Leaving one patient out
-I have done this on the first dataset with poor results. Below is the training progress with the test set being patient 53 and only considering differentially expressed cells. The minimum is at RMSE=1.56 and we have get RMSE around 1.0 when we mix the cells together. We also see here how the model overfits to the patients in the training set. This trend is similar for all the patients with most not going below RMSE = 3.0
+I have done this on the first (old) dataset with poor results. Below is the training progress with the test set being patient 53 and only considering differentially expressed cells. The minimum is at RMSE=1.56 compared to the RMSE around 1.0 when we mix the patients in training and testing. We also see here how the model overfits to the patients in the training set. This trend is similar for all the patients with most not going below RMSE = 3.0
 
 <img src="plots/train_prog_pn53.png" alt="drawing" width="500"/>
 
-With these results we can conclude that we can not generalize beyond the patients in the training set. 
+<img src="plots/pred_on_pn53.png" alt="drawing" width="500"/>
 
-This suggests that there is more variance between patients than within patients. For the NeoLetExe dataset I am not able to distinguish between the patients in the UMAP clustering, which could indicate that the cells are more similar across patients than within patiens, but these results suggest otherwise. It might also be due to the fact that the UMAP is clustered to distinguish between cell types and not patients. 
+With these results we can likely conclude that we can not generalize beyond the patients in the training set. 
 
-With the model used here it is in some way analogous to having 13 data points and predicting on a 14th, and it is unreasonable that 13 datapoints will represent an entire population. Especially when the actual data used is so unbalanced between the 13 datapoints. The model is in some sense extrapolating from a small handful of patients to a new one, which is probably a bad idea. 
+This suggests that there is more variance between patients than within patients or at least that the in-patient-variation is not similar across patients. For the NeoLetExe dataset I am not able to distinguish between the patients in the UMAP clustering, which could indicate that the cells are more similar across patients than within patiens, but these results suggest otherwise. The UMAP result might also be due to the fact that the UMAP is clustered to distinguish between cell types and not between patients. 
+
+With the model used here it is in some way analogous to having 13 data points and predicting on a 14th, and it is unreasonable that 13 datapoints will represent an entire population. Especially when the actual data used is so unbalanced between the 13 datapoints where some individuals are almost not represented. The model is extrapolating from a small handful of patients to a new one. 
