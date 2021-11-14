@@ -1,5 +1,7 @@
 # Predicting Gene Expression and Explaining Gene Interactions Using Single Cell Data
 
+The best understanding of the project for an outsider is probably gained through `progress_report.md`
+
 This project uses XGBoost to predict the expression of genes of interest from single cell data from the tumors of breast cancer patients. The models are analyzed using shapley values to measure the importance of each gene in predicting the expression of the target gene. 
 
 Most code will only run on the `med-biostat`servers due to the data being stored there.
