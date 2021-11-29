@@ -65,3 +65,7 @@ With the model used here it is in some way analogous to having 13 data points an
 
 # Dummy encoding of patient numbers
 I have done this and the patient variables have shapley values of 0. In a recent lecture with Riccard de Bin he presented a method he used to force the model to use some variables more often. He didn't explain it fully, but I plan to talk to him to see if he has any good suggestions. He had worked with genetics data to predict survival. 
+
+
+# Lasso for baseline prediction
+Preliminary results can be found in Notebooks/R_Lasso.ipynb
