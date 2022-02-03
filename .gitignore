@@ -2,6 +2,7 @@
 .vscode/
 *.html
 SingleCells/notebook/src/tmp/
+**/tmp
 
 Regression-positive_esr1_xavier.ipynb
 
