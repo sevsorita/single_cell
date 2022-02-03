@@ -1,7 +1,7 @@
 # Files
 .vscode/
 *.html
-notebook/src/tmp/
+SingleCells/notebook/src/tmp/
 
 Regression-positive_esr1_xavier.ipynb
 
