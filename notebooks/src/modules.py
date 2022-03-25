@@ -23,6 +23,10 @@ def add_zeros(s, width=2):
     return s
 
 
+def get_index(gene : str, X: pd.DataFrame):
+    return np.where(X.columns==gene)[0][0]
+
+
 def z_score_comparison(a, b, p=True):
     n_a = a.shape[0]
     n_b = b.shape[0]
@@ -65,7 +69,7 @@ def plot_prediction_alt(y_true, y_pred, fig=None, ax=None, title="", **kwargs):
     return fig
 
 def plot_prediction(y_true, y_pred, fig=None, ax=None, title="", **kwargs):
-
+       
     r2 = r2_score(y_true, y_pred)
     rmse = root_mse(y_true, y_pred)
 
@@ -73,16 +77,46 @@ def plot_prediction(y_true, y_pred, fig=None, ax=None, title="", **kwargs):
 
     if fig is None:
         fig, ax = plt.subplots()
-    if "color" not in kwargs:
+    
+    if "color" not in kwargs and "c" not in kwargs:
         kwargs["color"] = "black"
+    elif 'c' in kwargs:
+        kwargs["c"] = kwargs["c"][sorter]
+    
+    
     ax.set_title(title)
-    ax.plot(np.arange(y_true.shape[0]), y_true[sorter], label="True", color="red")
-    ax.scatter(np.arange(y_true.shape[0]), y_pred[sorter], s=6, alpha=0.5, label="Prediction", **kwargs)
-    ax.legend(title = f"$R^2$ = {r2:.3f}\nRMSE = {rmse:.3f}")
-    ax.set_ylabel("Gene expression")
+    
+    if "cmap" in kwargs and (kwargs["cmap"] == "hsv" or kwargs["cmap"] =="nipy_spectral"):
+        true_color="black"
+    else:
+        true_color="red"
+    
+    ax.plot(np.arange(y_true.shape[0]), y_true[sorter], label="True", color=true_color)
+    sc = ax.scatter(np.arange(y_true.shape[0]), y_pred[sorter], s=6, alpha=0.5, label="Prediction", **kwargs)
+    ax.set_ylabel("ESR1 expression")
     ax.set_xlabel("Cells sorted by target gene expression")
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
+    legend1 = ax.legend(*sc.legend_elements(),
+                    bbox_to_anchor=(1, 1), title="Patients")
+    
+    if 'c' in kwargs:
+        for i, p in enumerate(np.arange(kwargs["c"].min(),kwargs["c"].max()+1)):
+            
+            if p in kwargs["c"]:
+                r2 = r2_score(y_true[(kwargs["c"]==p)], y_pred[(kwargs["c"]==p)])
+                if r2 != float("nan"):
+                    n = sum(kwargs["c"]==p)
+                    legend1.get_texts()[i].set_text(f"{p} - R2:{r2:.2f}, n={n}")
+                    
+            else:
+                legend1.get_texts()[i].set_text(f"{p} - n=0")
+            
+            #print(str(legend1.get_texts()[i]).split("{")[-1].split("}")[0])
+            #legend1.get_texts()[i].set_text(f"{t} {i}")
+    
+    ax.add_artist(legend1)
+    ax.legend(title = f"$R^2$ = {r2:.3f}\nRMSE = {rmse:.3f}")
     return fig
 
 def plot_classification(y_true, y_pred, classifier="binary", fig=None, ax=None, title=""):
@@ -99,7 +133,7 @@ def metric_converter(metrics):
             output.append(mean_squared_error)
         elif metric == "r2": 
             output.append(r2_score)
-        elif metric == "mae":
+        elif metric == "mae": 
             output.append(mean_absolute_error)
         elif metric == "rmse":
             output.append(root_mse)
@@ -586,3 +620,62 @@ def barh_plot(corr_df, dpi=80, title="", fig=None, ax=None):
     #plt.legend()
 
     plt.show()  
+
+
+import typing
+from typing import List
+
+class Data:
+    
+    def __init__(self, X: pd.DataFrame, y: pd.Series, train_inds: List=None, test_inds: List=None, val_inds: List=None, weights = None) -> None:
+        self.X = X
+        self.y = y
+
+        self.split_data(train_inds, test_inds, val_inds)
+        self.set_weights(weights)
+
+    def split_data(self, train_inds: List[int]=None, test_inds: List[int]=None, val_inds: List[int]=None):
+        self.train_inds=train_inds
+        self.test_inds=test_inds
+        self.val_inds=val_inds
+
+        if type(train_inds) is List:
+            if type(test_inds) is List:
+                if len(train_inds) + len(test_inds) != len(set(train_inds+set(test_inds))):
+                    raise ValueError("There are overlapping indices between training and testset")
+
+    def set_weights(self, weights):
+        try:
+            if len(weights) != len(self.y):
+                raise ValueError("Length of weights must match dataset")
+            self.weights = weights
+        except TypeError:
+            pass 
+
+    @property
+    def X_train(self):
+        if type(self.train_inds) is list:
+            return self.X.iloc[self.train_inds]
+        else:
+            raise IndexError("train_inds are not set. Set them through the split_data function")
+
+    @property
+    def y_train(self):
+        return self.y[self.train_inds]
+
+    @property
+    def X_test(self):
+        return self.X.iloc[self.test_inds]
+
+    @property
+    def y_test(self):
+        return self.y[self.test_inds]
+
+    @property
+    def weights_train(self):
+        return self.weights[self.train_inds]
+
+    
+    
+
+
