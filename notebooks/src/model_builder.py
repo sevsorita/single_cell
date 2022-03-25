@@ -134,8 +134,6 @@ class CellLevelModel:
                         Y = pd.concat([self.datasets[gene]["y_test"],
                                        self.datasets[gene]["y_train"]])
 
-                        
-
                         # Perform cross validation
                         if type(cv) is int and cv>1:
                                 print(f"      Performing {cv} fold cross-validation on {gene} -", end="  ")
@@ -300,7 +298,7 @@ class CellLevelModel:
 
                 for gene in self.genes:
                         print(f"Getting data for {gene}")
-                        self.VS.compute_corr(gene, verbose=1, positive_exp=positive_exp)
+                        self.VS.compute_corr(gene, verbose=1, positive_exp=positive_exp, diff_lim=diff_lim)
 
                         X, y, alpha = self.VS.extract_data(gene, diff_lim=diff_lim, nan_limit=nan_limit, select_n=select_n, save_corr=False, verbose=verbose, positive_exp=positive_exp)
 

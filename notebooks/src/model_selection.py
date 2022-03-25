@@ -4,11 +4,13 @@ import seaborn as sns
 from matplotlib.patches import Rectangle
 
 import time
+import datetime
+
 import itertools as it
 import copy
 import xgboost as xgb
 
-from src.modules import add_zeros
+from modules import add_zeros
 
 #from src.nn_models import FFNN, model_constructor
 
@@ -16,7 +18,7 @@ from src.modules import add_zeros
 class XGBGridSearch:
     """Perform a grid search for the best variables"""
 
-    def __init__(self, model, params, n_jobs=-1, cv=5, ):
+    def __init__(self, model, params, n_jobs=-1, cv=5):
         """
         Parameters:
         -----------
@@ -73,7 +75,7 @@ class XGBGridSearch:
                 print("   ",name, ":", combination[i], end=" ")
             
             # Perform cross validation
-            cvresult = xgb.cv(model_params, xgtrain, num_boost_round=1000, early_stopping_rounds=80,  nfold=self.cv, metrics="rmse")
+            cvresult = xgb.cv(model_params, xgtrain, num_boost_round=2000, early_stopping_rounds=100,  nfold=self.cv, metrics="rmse")
 
             # Retrieve results
             test_rmse_mean = cvresult.iloc[-1,2]
@@ -95,19 +97,17 @@ class XGBGridSearch:
             results_std[j] = test_rmse_std
 
             end = time.time()
-            total_time = end-base_start
-            total_time_sec = f"{total_time%60:.0f}"
+            total_time = datetime.timedelta(seconds=end-base_start)
+            
             local_time = end-start
-            local_time_sec = f"{local_time%60:.0f}"
             times[j] = local_time
 
-            print(f"\n    elapsed time: {total_time//60:.0f}:{add_zeros(total_time_sec)}, {self.cv} fold time: {local_time//60:.0f}:{add_zeros(local_time_sec)}")
-            
+            print(f"\n           elapsed time: {total_time}\n    {self.cv} fold time: {datetime.timedelta(seconds=local_time)}")
+ 
             try:
-                eta = times[:j+1].mean()*(len(combinations)-(j+1))
-                eta_sec = f"{eta%60:2.0f}"
-                print(f"    time left: {eta//60:.0f}:{add_zeros(eta_sec)}")
-            except:
+                eta = datetime.timedelta(seconds=times[:j+1].mean()*(len(combinations)-(j+1)))
+                print(f"              time left: {eta}")
+            except:    
                 pass
             
 

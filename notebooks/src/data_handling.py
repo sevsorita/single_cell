@@ -201,14 +201,13 @@ def compute_p_value(df, target, diff_lim=0.5, fdr=True, verbose=1, positive_exp=
     if verbose: print("Counting NaNs:")
     # Check if it can be computeted efficiently
     if target_col.isnull().sum() == 0:
-        for i in prog_bar(range(n_col)):
-            non_nan_count[i] = df.shape[0]-df[df.columns[i]].isnull().sum()     # This can be sped up with simply df.isnull().sum()
+            non_nan_count = np.ones(df.shape[1], dtype=int)*df.shape[0] - df.isnull().sum()
             
     # Slow if not
     else:
         for i in prog_bar(range(n_col)):
             non_nan_count[i] = count_non_nans(target_col, df[df.columns[i]])
-            
+    print(non_nan_count)
 
     correlation = np.empty(n_col)
     p_value = np.zeros(n_col)
@@ -242,6 +241,8 @@ def compute_p_value(df, target, diff_lim=0.5, fdr=True, verbose=1, positive_exp=
     # Test
     
     if corr_df.isnull().sum().sum():
+        print(corr_df.isnull().sum())
+        print(corr_df.isnull().sum().sum())
         print("Dropping NANS!!!")
         print("correlation: ", corr_df["correlation"].isnull().sum())
         print("P-values:    ", corr_df["p-value"].isnull().sum())
