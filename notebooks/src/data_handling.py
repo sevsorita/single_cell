@@ -25,7 +25,7 @@ class Dataset:
     timepoint : NOT YET implemented which timepoint to use in NeoLetExe data.
     """
     
-    def __init__(self, subset="Cancer", source_name = "BluePrint", nans=False, timepoint=None) -> None:
+    def __init__(self, subset="Cancer", source_name = "BluePrint", nans=False, timepoint=None, data=None) -> None:
 
         dirpath = "/data/severs/" + source_name + "/"
         source_name = "".join(re.findall('([A-Z])', source_name)) 
@@ -56,8 +56,8 @@ class Dataset:
         target : str, the gene which will be predicted
         subsampling : int in [0,1,2]
                       if `0` no subsampling is done. `1` removes cells with absolute expression
-                      less than 0.5. `2` subsamples 10% of the cells with abs expression less
-                      than 0.5 and includes them for a more balanced dataset.   
+                      less than 0.5. `2` subsamples the cells with abs expression less
+                      than 0.5 and includes some to increase the dataset size by 25%.   
         kwargs : passed on to balanced_datasampling if 
         """
 
@@ -112,7 +112,7 @@ class Dataset:
         exp_limit : threshold for differentially expressed cells
         random_state : set random state for reproducability
 
-        Returns: pandas DataFrame with balanced data. 
+        Returns: pandas DataFrame with balanced data. %
         """
         np.random.seed(random_state)
         inc_pns = df[abs(df[target])>exp_limit].patient_number.copy()
@@ -164,6 +164,20 @@ class Dataset:
 
     
     def train_test_split(self, test_size=0.2, stratify="patient_number", random_state=None):
+        """
+        Split the data in training and testing and stratify by either `patient_number` or 
+        `target`.
+        Arguments:
+        ----------
+        test_size : float, share of data in the test set
+        stratify : which variable to stratify by. Either `patient_number` or `target` i.e 
+                   target gene.
+        random_state : int, for reproducability
+
+        Return:
+        -------
+
+        """
 
         if stratify == "patient_number":
             sss = StratifiedShuffleSplit(n_splits=1, test_size=test_size, random_state=random_state)
@@ -188,7 +202,8 @@ class Dataset:
         else:
             pass
 
-    def cross_validation = 
+    def cross_validation():
+        pass
 
 
 def load_cancer():
