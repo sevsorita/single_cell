@@ -4,6 +4,10 @@
 SingleCells/notebook/src/tmp/
 **/tmp
 
+# Plots
+*.png
+*.pdf
+
 Regression-positive_esr1_xavier.ipynb
 
 
