@@ -200,4 +200,6 @@ class Dataset:
             pass
 
     def cross_validation():
+        #TODO: implement cross validation on stratified target gene split
+        #TODO: implemnt cv across patients
         pass
