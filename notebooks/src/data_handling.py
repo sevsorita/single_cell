@@ -1,5 +1,4 @@
-from inspect import FullArgSpec
-from tkinter.messagebox import RETRY
+import matplotlib
 import pandas as pd
 from sklearn.model_selection import StratifiedShuffleSplit, train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -109,7 +108,7 @@ class Dataset:
         exp_limit : threshold for differentially expressed cells
         random_state : set random state for reproducability
 
-        Returns: pandas DataFrame with balanced data. %
+        Returns: pandas DataFrame with balanced data. 
         """
         np.random.seed(random_state)
         inc_pns = df[abs(df[target])>exp_limit].patient_number.copy()
@@ -117,46 +116,74 @@ class Dataset:
         exc_pns["ESR1"] = pd.cut(exc_pns.ESR1,bins=np.linspace(-exp_limit,exp_limit,6), labels=np.arange(5))
         n_old_rows = inc_pns.shape[0]
         target_b = df.patient_number.value_counts() / df.shape[0]
+
         n_new_rows = int(inc_pns.shape[0]*dataincrease)
         filler = np.empty(n_new_rows)
         filler.fill(np.nan)
+
+        inc_pns_count = inc_pns.value_counts().copy()
         inc_pns = inc_pns.append(pd.Series(filler))
         missing_pns = list(set(df.patient_number.unique()) - set(inc_pns.unique()))
         
         balances = np.zeros((n_new_rows, len(df.patient_number.unique())))
         exp_strat = np.zeros(5)
+
+        for p in range(int(inc_pns_count.index.min()), int(inc_pns_count.index.max())):
+            if p not in inc_pns_count.index:
+                inc_pns_count[p] = 0
+
+
+
         for i in range(n_old_rows, inc_pns.shape[0]):
-            current_b = (inc_pns.value_counts() / inc_pns.shape[0]).copy()
+            if priority=="expression" or priority=="patient_number":
+                current_b = (inc_pns_count / inc_pns.shape[0]).copy()
 
-            for p in missing_pns:
-                if p not in current_b.index:
-                    current_b = current_b.append(pd.Series({p:0}))
-        
-            inbalance = target_b - current_b
-            balances[i-n_old_rows] = inbalance.sort_index()
+                for p in missing_pns:
+                    if p not in current_b.index:
+                        current_b = current_b.append(pd.Series({p:0}))
+            
+                inbalance = target_b - current_b
+                balances[i-n_old_rows] = inbalance.sort_index()
 
-            if priority=="expression":
+                if priority=="expression":
+                    bin = np.argmin(exp_strat)
+                    for pn in inbalance.sort_values(ascending=False).index:
+                        pn_df = exc_pns[(exc_pns.patient_number==pn) & (exc_pns.ESR1==bin)]
+                        if pn_df.shape[0]>0:
+                            exp_strat[bin]+=1
+                            break
+                    if pn_df.shape[0]==0:
+
+
+                            raise ValueError("No cells with the needed expression!")
+                
+                elif priority=="patient_number":
+                    new_pn = inbalance.index[np.argmax(inbalance)][0]
+                    for bin in np.argsort(exp_strat):
+                        pn_df = exc_pns[(exc_pns.patient_number==new_pn) & (exc_pns.ESR1==bin)]
+                        if pn_df.shape[0]>0:
+                            exp_strat[bin]+=1
+                            break
+            
+            elif priority=="expression_alt":
                 bin = np.argmin(exp_strat)
-                for pn in inbalance.sort_values(ascending=False).index:
+                pn_ranking = inc_pns_count.sort_values(ascending=True).index
+                for pn in pn_ranking:
                     pn_df = exc_pns[(exc_pns.patient_number==pn) & (exc_pns.ESR1==bin)]
                     if pn_df.shape[0]>0:
                         exp_strat[bin]+=1
                         break
             
-            elif priority=="patient_number":
-                new_pn = inbalance.index[np.argmax(inbalance)][0]
-                for bin in np.argsort(exp_strat):
-                    pn_df = exc_pns[(exc_pns.patient_number==new_pn) & (exc_pns.ESR1==bin)]
-                    if pn_df.shape[0]>0:
-                        exp_strat[bin]+=1
-                        break
             else:
-                raise ValueError("priority must be either `expression` or `patient_number`.")
-            index = np.random.randint(pn_df.shape[0])
-            inc_pns.at[i-n_old_rows] = pn_df.patient_number[index]
-            inc_pns.rename(index={i-n_old_rows:pn_df.index[index]},inplace=True)
-            exc_pns.drop(pn_df.index[index], inplace=True)
-        
+                raise ValueError("priority must be either 'expression', 'expression_alt' or 'patient_number'.")
+
+            inc_pns_count[pn] += 1
+
+            index = np.random.randint(pn_df.shape[0])                               # Selects a cell index from the patient
+            inc_pns.at[i-n_old_rows] = pn_df.patient_number[index]                  # Adds the cell to the included list
+            inc_pns.rename(index={i-n_old_rows:pn_df.index[index]},inplace=True)    # Sets the name of the cell in the included list
+            exc_pns.drop(pn_df.index[index], inplace=True)                          # Removes the cell from the excluded list
+
         return df.loc[inc_pns.index].copy()
 
     
