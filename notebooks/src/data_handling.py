@@ -226,7 +226,8 @@ class Dataset:
                 return self.X.iloc[train], self.X.iloc[test], self.Y[train], self.Y[test]
 
         else:
-            pass
+            raise ValueError("Not valid 'stratify' value.")
+
 
     def cross_validation():
         #TODO: implement cross validation on stratified target gene split
