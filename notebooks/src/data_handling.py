@@ -21,28 +21,30 @@ class Dataset:
     timepoint : NOT YET implemented which timepoint to use in NeoLetExe data.
     """
     
-    def __init__(self, subset="Cancer", source_name = "BluePrint", nans=False, timepoint=None, data=None) -> None:
+    def __init__(self, path=None, subset="Cancer", source_name = "BluePrint", nans=False, timepoint=None, data=None) -> None:
 
-        dirpath = "/data/severs/" + source_name + "/"
-        source_name = "".join(re.findall('([A-Z])', source_name)) 
+        if path is None: 
+            dirpath = "/data/severs/" + source_name + "/"
+            source_name = "".join(re.findall('([A-Z])', source_name)) 
 
-        if not nans:
-            path = dirpath + subset + "_clean_" + source_name + ".pkl"
-            drop_nans = False
-            if not os.path.exists(path):
-                path = dirpath + subset+ "_" + source_name + ".pkl"
-                drop_nans = True
+            if not nans:
+                path = dirpath + subset + "_clean_" + source_name + ".pkl"
+                drop_nans = False
+                if not os.path.exists(path):
+                    path = dirpath + subset+ "_" + source_name + ".pkl"
+                    drop_nans = True
+            else:
+                path = dirpath + subset + "_" +  source_name + ".pkl"
+            
+            self.df = pd.read_pickle(path)
+            
+            if drop_nans:
+                self.df = self.df.dropna(axis=1)
+            
+            if "patient_number" not in self.df.columns:
+                self.df["patient_number"] = pd.read_csv(dirpath+subset+"_patientnumber_"+source_name+".csv", header=None)[1].values
         else:
-            path = dirpath + subset + "_" +  source_name + ".pkl"
-        
-        self.df = pd.read_pickle(path)
-        
-        if drop_nans:
-            self.df = self.df.dropna(axis=1)
-        
-        if "patient_number" not in self.df.columns:
-            self.df["patient_number"] = pd.read_csv(dirpath+subset+"_patientnumber_"+source_name+".csv", header=None)[1].values
-    
+            self.df = pd.read_pickle(path)
     
     def set_XY(self, target="ESR1", subsampling=0, **kwargs):
         """Set the input and target for the model saved in self.X and self.Y. 
