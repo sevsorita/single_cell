@@ -108,11 +108,9 @@ def plot_prediction(y_true, y_pred, fig=None, ax=None, title="", sort=True, show
         pns = kwargs["c"]
         for i, p in enumerate(np.arange(pns.min(),pns.max()+1)):
             if p in pns.values:
-                r2 = r2_score(y_true[(pns==p)], y_pred[(pns==p)])
                 rmse = root_mse(y_true[(pns==p)], y_pred[(pns==p)])
-                if r2 != float("nan"):
-                    n = sum(pns==p)
-                    legend1.get_texts()[i].set_text(f"{p} - {rmse:2.2f} |{n:3.0f}")
+                n = sum(pns==p)
+                legend1.get_texts()[i].set_text(f"{p} - {rmse:2.2f} |{n:3.0f}")
             else:
                 legend1.get_texts()[i].set_text(f"{p} -  ~    |")
         ax.add_artist(legend1)
